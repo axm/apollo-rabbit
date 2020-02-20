@@ -32,19 +32,6 @@ namespace Apollo.Rabbit.DependencyInjection
             return services;
         }
 
-        //public static RabbitConsumerApp<T, U> AddRabbitConsumer<T, U>(this IServiceCollection services, Action<RabbitConsumerOptions> setup)
-        //    where T: class, IRabbitConsumer<U>
-        //{
-        //    var options = new RabbitConsumerOptions();
-        //    setup.Invoke(options);
-
-        //    services.AddSingleton(options);
-        //    services.AddSingleton<RabbitConsumerApp<T, U>>();
-
-        //    var provider = services.BuildServiceProvider();
-        //    return provider.GetService<RabbitConsumerApp<T, U>>();
-        //}
-
         public static RabbitConsumerApp<TImplementation, T> AddRabbitConsumer<T, TImplementation>(this IServiceCollection services, Action<RabbitConsumerOptions> setup)
             where T : class
             where TImplementation: class, IRabbitConsumer<T>

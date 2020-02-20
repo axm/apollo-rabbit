@@ -10,12 +10,4 @@ namespace Apollo.Rabbit
         public bool ReuseConnections { get; set; } = true;
         public bool ReuseChannels { get; set; } = true;
     }
-
-    public static class RabbitOptionsExtensions
-    {
-        public static RabbitOptions RegisterPublisher<T>(this RabbitOptions options, string exchange, string queue)
-        {
-            throw new NotImplementedException();
-        }
-    }
 }
