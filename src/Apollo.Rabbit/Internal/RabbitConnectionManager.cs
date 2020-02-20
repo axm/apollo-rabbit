@@ -2,25 +2,40 @@
 
 namespace Apollo.Rabbit.Internal
 {
-    internal sealed class RabbitConnectionManager : IRabbitConnectionManager
+    public sealed class RabbitConnectionManager : IRabbitConnectionManager
     {
-        private readonly IConnectionFactory _connectionFactory;
-        private readonly RabbitConnectionOptions _options;
+        private readonly IRabbitConnectionFactory _connectionFactory;
+        private readonly IRabbitChannelFactory _rabbitChannelFactory;
+        private readonly RabbitOptions _options;
+        private IConnection Connection;
+        private IModel Channel;
 
-        public RabbitConnectionManager(IConnectionFactory connectionFactory, RabbitConnectionOptions options)
+        public RabbitConnectionManager(IRabbitConnectionFactory connectionFactory, IRabbitChannelFactory rabbitChannelFactory, RabbitOptions options)
         {
             _connectionFactory = connectionFactory;
+            _rabbitChannelFactory = rabbitChannelFactory;
             _options = options;
         }
-        
-        public IModel CreateChannel()
-        {
-            var connection = _connectionFactory.CreateConnection();
-            var channel = connection.CreateModel();
-            DeclareQueues(channel);
 
-            return channel;
+        public IModel GetChannel()
+        {
+            if (Connection == null || !Connection.IsOpen)
+            {
+                Connection = CreateConnection();
+            }
+
+            if (Channel == null || Channel.IsClosed)
+            {
+                Channel = _rabbitChannelFactory.CreateChannel(Connection);
+            }
+
+            DeclareBindings(Channel);
+
+            return Channel;
         }
+
+        private IConnection CreateConnection()
+            => _connectionFactory.GetConnectionFactory(_options.Connection.HostName, _options.Connection.VirtualHost, _options.Connection.Username, _options.Connection.Password).CreateConnection();
 
         private void DeclareBindings(IModel channel)
         {
@@ -42,6 +57,5 @@ namespace Apollo.Rabbit.Internal
                     binding.Arguments);
             }
         }
-
     }
 }

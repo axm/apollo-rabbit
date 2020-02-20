@@ -4,6 +4,6 @@ namespace Apollo.Rabbit
 {
     public interface IRabbitConnectionManager
     {
-        IModel CreateChannel();
+        IModel GetChannel();
     }
 }
